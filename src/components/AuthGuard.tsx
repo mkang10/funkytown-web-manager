@@ -9,7 +9,7 @@ interface AuthGuardProps {
   children: ReactNode;
 }
 
-const publicRoutes = ["/", "/unauthorized", "/register"];
+const publicRoutes = ["/", "/unauthorized", "/register","/forgotpassword"];
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const router = useRouter();

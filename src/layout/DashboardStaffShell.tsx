@@ -2,20 +2,11 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  FiHome,
-  FiShoppingCart,
-  FiCheckCircle,
-  FiTruck,
-  FiRotateCcw,
-  FiMessageSquare,
-  FiTrendingUp,
-  FiBox,
-  FiClipboard,
-} from "react-icons/fi";
-import SidebarItem from "@/components/Sidebar/SidebarItem";
-import SidebarDropdown from "@/components/Sidebar/SidebarDropdown";
-import Navbar from "@/components/Navbar/Navbar";
+
+import { motion } from "framer-motion";
+
+import Sidebar from "./staff/sidebar";
+import Navbar from "./staff/navbar";
 
 interface DashboardStaffShellProps {
   children: React.ReactNode;
@@ -34,113 +25,36 @@ export default function DashboardStaffShell({ children }: DashboardStaffShellPro
   };
 
   return (
-    <div className="flex min-h-screen bg-white text-black">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-tr from-white to-neutral-100 dark:from-black dark:to-neutral-900">
       {/* Sidebar */}
-      <aside className={`${isSidebarOpen ? "w-56" : "w-16"} bg-white border-r border-gray-200 transition-all duration-300 flex flex-col`}>
-        {/* Logo & Toggle */}
-        <div className="flex items-center justify-between px-4 py-4">
-          <div className="flex items-center space-x-2">
-            <img
-              src="/assets/logo.avif"
-              alt="Funkytown Logo"
-              className="h-8 w-8 object-contain cursor-pointer"
-              onClick={() => setIsSidebarOpen((prev) => !prev)}
-            />
-            {isSidebarOpen && (
-              <span className="text-xl font-extrabold text-black tracking-tight">
-                FUNKYTOWN
-              </span>
-            )}
-          </div>
-        </div>
+     <div className="flex">
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        activeDropdown={activeDropdown}
+        setActiveDropdown={setActiveDropdown}
+        handleLogout={handleLogout}
+      />
+      <main className="flex-1">{/* Nội dung chính */}</main>
+    </div>
 
-        {/* Menu Items */}
-        <nav className="flex-1 overflow-y-auto py-4">
-          <SidebarItem icon={<FiHome />} label="Trang Chủ" isOpen={isSidebarOpen} route="/staff-dashboard" />
-          <SidebarDropdown
-            id="warehouses"
-            icon={<FiClipboard />}
-            label="Kho Hàng"
-            isOpen={isSidebarOpen}
-            subItems={[
-              { label: "Yêu Cầu Nhập", route: "/staff-import-requests" },
-              { label: "Yêu Cầu Xuất", route: "/staff-dispatch-request" },
-            ]}
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-          />
-          <SidebarDropdown
-            id="orders"
-            icon={<FiShoppingCart />}
-            label="Đơn Hàng"
-            isOpen={isSidebarOpen}
-            subItems={[
-              // { label: "Nhận Đơn", route: "/orders/receive" },
-              { label: "Xác Nhận Đơn", route: "/order/order-confirm" },
-            ]}
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-          />
-          {/* <SidebarDropdown
-            id="packing"
-            icon={<FiCheckCircle />}
-            label="Đóng Gói"
-            isOpen={isSidebarOpen}
-            subItems={[{ label: "Đóng Gói & Cập Nhật", route: "/staff/packing" }]}
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-          /> */}
-          <SidebarDropdown
-            id="delivery"
-            icon={<FiTruck />}
-            label="Giao Hàng"
-            isOpen={isSidebarOpen}
-            subItems={[{ label: "Theo Dõi", route: "/staff/delivery" }]}
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-          />
-          <SidebarDropdown
-            id="returns"
-            icon={<FiRotateCcw />}
-            label="Hoàn Trả"
-            isOpen={isSidebarOpen}
-            subItems={[
-              { label: "Yêu Cầu", route: "/staff/returns/requests" },
-              { label: "Xử Lý", route: "/staff/returns/process" },
-            ]}
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-          />
-          {/* <SidebarItem icon={<FiMessageSquare />} label="Phản Hồi" isOpen={isSidebarOpen} route="/staff/feedback" /> */}
-          {/* <SidebarDropdown
-            id="reports"
-            icon={<FiTrendingUp />}
-            label="Báo Cáo"
-            isOpen={isSidebarOpen}
-            subItems={[{ label: "Thống Kê", route: "/staff/reports/statistics" }]}
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-          /> */}
-          {/* <SidebarDropdown
-            id="imports"
-            icon={<FiBox />}
-            label="Nhập Hàng"
-            isOpen={isSidebarOpen}
-            subItems={[{ label: "Nhập Hàng", route: "/staff/imports" }]}
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-          /> */}
-        </nav>
-      </aside>
+      {/* Main area */}
+      <div className="flex flex-col flex-1 overflow-hidden">
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <Navbar />
-        <main className="p-6 flex-1">
-          <div className="rounded-xl border border-gray-100 p-6">
+    <Navbar />
+
+        <main className="flex-1 p-6 overflow-y-auto bg-neutral-100 dark:bg-neutral-900 transition-colors duration-300">
+          <motion.div
+            className="rounded-3xl p-6 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-black shadow-[0_0_60px_rgba(0,0,0,0.1)] dark:shadow-[0_0_80px_rgba(255,255,255,0.15)] ring-2 ring-white/30 dark:ring-white/10 transition-all duration-500"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             {children}
-          </div>
+          </motion.div>
         </main>
+
+
       </div>
     </div>
   );

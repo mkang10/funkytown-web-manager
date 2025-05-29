@@ -5,7 +5,7 @@ export interface StaffInventoryImportStoreDetailDto {
   wareHouseId: number;
   allocatedQuantity: number;
   // Chỉ cho phép các giá trị "Success", "Processing", "Failed"
-  status: "Success" | "Processing" | "Failed";
+  status: "Success" | "Processing" | "Shortage" | "Handled";
   comments?: string;
   staffDetailId?: number;
   wareHouseName: string;
@@ -16,15 +16,7 @@ export interface StaffInventoryImportStoreDetailDto {
   actualReceivedQuantity? : number;
 }
 
-export interface StaffImportFilterDto {
-  StaffDetailId: number;
-  // Status bây giờ chỉ nhận "Success", "Processing", "Failed"
-  Status?: "Success" | "Processing" | "Failed";
-  SortBy?: string; // Ví dụ: "importStoreId", "wareHouseName", "status", "allocatedQuantity", "staffName"
-  IsDescending?: boolean;
-  Page?: number;
-  PageSize?: number;
-}
+
 
 export interface FilterStaffInventoryResponse {
   data: {
@@ -42,7 +34,15 @@ export interface FullStockDetail {
   actualReceivedQuantity: number;
   comment: string;
 }
-
+export interface StaffImportFilterDto {
+  StaffDetailId: number;
+  // Status bây giờ chỉ nhận "Success", "Processing", "Failed"
+  Status?: "Success" | "Processing" | "Failed";
+  SortBy?: string; // Ví dụ: "importStoreId", "wareHouseName", "status", "allocatedQuantity", "staffName"
+  IsDescending?: boolean;
+  Page?: number;
+  PageSize?: number;
+}
 export interface FullStockResponse {
   data: string; // Ví dụ: "Cập nhật Done thành công"
   status: boolean;

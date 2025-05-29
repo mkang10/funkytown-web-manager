@@ -1,213 +1,226 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { loginUser } from "@/ultis/AuthAPI";
 import { LoginResponse } from "@/type/auth";
+import useDarkMode from "@/hooks/useDarkMode";
+import ThemeToggle from "@/hooks/ThemeToggle";
 
-// MUI components
 import {
   TextField,
   Button,
-  Checkbox,
-  FormControlLabel,
   Typography,
   Paper,
   Box,
+  CircularProgress,
+  InputAdornment,
+  IconButton,
+  useTheme,
 } from "@mui/material";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaUser, FaLock, FaUnlock } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function Login() {
-  const [showLogo, setShowLogo] = useState(true);
-  const [email, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+  const { isDarkMode } = useDarkMode(); // Custom hook để kiểm tra và toggle theme
+  const theme = useTheme(); // MUI theme
+  const isDark = theme.palette.mode === "dark"; // Kiểm tra từ MUI theme
 
-  // Tự động chuyển đổi giữa logo và chữ "Login" mỗi 2500ms
+  const router = useRouter();
+  const emailRef = useRef<HTMLInputElement>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setShowLogo((prev) => !prev);
-    }, 2500);
-    return () => clearInterval(interval);
+    emailRef.current?.focus();
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const credentials = { email, password };
+    if (!email || !password) {
+      toast.error("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
 
+    setLoading(true);
     try {
-      const response: LoginResponse = await loginUser(credentials);
+      const response: LoginResponse = await loginUser({ email, password });
       if (response.status) {
-        // Lưu token và account vào localStorage
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("account", JSON.stringify(response.data.account));
+        toast.success("Đăng nhập thành công!");
 
-        toast.success(response.message, { position: "top-right", autoClose: 3000 });
         setTimeout(() => {
-          // Kiểm tra roleId
-          if (response.data.account.roleId === 2) {
-            router.push("/dashboard");
-          } else if (response.data.account.roleId === 3) {
-            router.push("/staff-dashboard");
-          } else {
-            // Trường hợp khác (nếu có) => Chuyển tới trang mặc định
-            router.push("/");
-          }
-        }, 2000);
+          const { roleId } = response.data.account;
+          router.push(roleId === 2 ? "/dashboard" : roleId === 3 ? "/staff-dashboard" : "/");
+        }, 1500);
       } else {
-        toast.error(response.message, { position: "top-right", autoClose: 3000 });
+        toast.error(response.message);
       }
-    } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
-        toast.error(error.response.data.message, { position: "top-right", autoClose: 3000 });
-      } else {
-        toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau!", { position: "top-right", autoClose: 3000 });
-      }
+    } catch {
+      toast.error("Lỗi hệ thống. Vui lòng thử lại!");
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Màu sắc theo theme
+  const backgroundColor = isDark ? "#0f0f0f" : "#f4f4f4";
+  const paperColor = isDark ? "#1e1e1e" : "#fff";
+  const inputBg = isDark ? "#2a2a2a" : "#f0f0f0";
+  const textColor = isDark ? "#fff" : "#000";
+  const labelColor = isDark ? "#aaa" : "#555";
+  const buttonBg = isDark ? "#fff" : "#000";
+  const buttonColor = isDark ? "#000" : "#fff";
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
+        backgroundColor,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundImage: "url('/assets/office.avif')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        px: 2,
         position: "relative",
       }}
     >
-      {/* Overlay nền */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(0,0,0,0.4)",
-        }}
-      />
+      {/* Toggle theme ở góc trên */}
+      <Box sx={{ position: "absolute", top: 16, right: 16 }}>
+        <ThemeToggle />
+      </Box>
 
       <Paper
-        elevation={6}
+        elevation={0}
+        component={motion.div}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         sx={{
-          position: "relative",
-          zIndex: 1,
-          p: 4,
-          maxWidth: 400,
+          p: 5,
           width: "100%",
+          maxWidth: 420,
+          backgroundColor: paperColor,
+          borderRadius: 4,
+          border: isDark ? "1px solid #333" : "1px solid #ccc",
+          boxShadow: "0 0 20px rgba(0,0,0,0.3)",
           textAlign: "center",
-          backdropFilter: "blur(10px)",
-          backgroundColor: "rgba(255, 255, 255, 0.7)",
-          borderRadius: 2,
         }}
       >
-        {/* Container cố định cho logo và chữ "Login" */}
         <Box
           sx={{
-            position: "relative",
-            width: 75,
-            height: 75,
-            mb: 2,
+            width: 90,
+            height: 90,
             mx: "auto",
+            mb: 3,
+            borderRadius: "50%",
+            overflow: "hidden",
+            border: `2px solid ${isDark ? "#444" : "#ddd"}`,
           }}
         >
-          {/* Logo */}
-          <Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              transition: "opacity 1s ease-in-out",
-              opacity: showLogo ? 1 : 0,
-            }}
-          >
-            <Image src="/assets/logo.avif" alt="Logo" width={75} height={75} />
-          </Box>
-          {/* Chữ "Login" */}
-          <Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "opacity 1s ease-in-out",
-              opacity: showLogo ? 0 : 1,
-            }}
-          >
-            <Typography variant="h5" fontWeight="bold">
-              Login
-            </Typography>
-          </Box>
+          <Image src="/assets/logo.avif" alt="Logo" width={90} height={90} />
         </Box>
 
-        <Typography variant="body1" sx={{ mb: 3, color: "gray" }}>
-          Sign in to continue
+        <Typography variant="h6" sx={{ color: textColor, mb: 2 }}>
+          Đăng nhập hệ thống
         </Typography>
 
-        {/* Form đăng nhập */}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} noValidate>
           <TextField
             fullWidth
             label="Email"
-            variant="outlined"
-            margin="normal"
+            inputRef={emailRef}
             value={email}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
+            variant="filled"
+            margin="dense"
             InputProps={{
-              startAdornment: <FaUser style={{ marginRight: "10px", color: "gray" }} />,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaUser color="#888" />
+                </InputAdornment>
+              ),
+              disableUnderline: true,
+              sx: {
+                borderRadius: 2,
+                backgroundColor: inputBg,
+                input: { color: textColor },
+              },
             }}
+            InputLabelProps={{ style: { color: labelColor } }}
           />
 
           <TextField
             fullWidth
-            label="Password"
-            type="password"
-            variant="outlined"
-            margin="normal"
+            label="Mật khẩu"
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            variant="filled"
+            margin="dense"
             InputProps={{
-              startAdornment: <FaLock style={{ marginRight: "10px", color: "gray" }} />,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaLock color="#888" />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    {showPassword ? "🙈" : "👁️"}
+                  </IconButton>
+                </InputAdornment>
+              ),
+              disableUnderline: true,
+              sx: {
+                borderRadius: 2,
+                backgroundColor: inputBg,
+                input: { color: textColor },
+              },
             }}
+            InputLabelProps={{ style: { color: labelColor } }}
           />
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              my: 2,
-            }}
-          >
-            <FormControlLabel control={<Checkbox />} label="Remember me" />
-            <Typography
-              component="a"
+          <Box sx={{ textAlign: "right", mt: 1 }}>
+            <Button
               href="/forgotpassword"
-              sx={{ fontSize: "0.9rem", color: "blue", cursor: "pointer" }}
+              startIcon={<FaUnlock />}
+              sx={{
+                textTransform: "none",
+                color: labelColor,
+                fontSize: "0.85rem",
+                "&:hover": { textDecoration: "underline", color: textColor },
+              }}
             >
-              Forgot Password?
-            </Typography>
+              Quên mật khẩu?
+            </Button>
           </Box>
 
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ backgroundColor: "black", "&:hover": { backgroundColor: "gray" } }}
+            disabled={loading}
+            sx={{
+              mt: 2,
+              backgroundColor: buttonBg,
+              color: buttonColor,
+              py: 1.5,
+              fontWeight: "bold",
+              fontSize: "1rem",
+              borderRadius: 2,
+              "&:hover": {
+                backgroundColor: buttonColor,
+                color: buttonBg,
+                border: "1px solid",
+              },
+            }}
           >
-            Login
+            {loading ? <CircularProgress size={24} sx={{ color: buttonColor }} /> : "Đăng nhập"}
           </Button>
         </form>
       </Paper>

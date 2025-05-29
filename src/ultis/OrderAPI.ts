@@ -164,6 +164,16 @@ export const getAssignmentStaffOrders = async (
   filters: AssignmentOrderFilters
 ): Promise<AssignmentOrderListResponse> => {
   try {
+    // Lấy StaffDetailId từ localStorage
+    const storedAccount = localStorage.getItem("account");
+    if (storedAccount) {
+      const account = JSON.parse(storedAccount);
+      const staffId = account.roleDetails?.staffDetailId;
+      if (staffId) {
+        filters.staffId = staffId; // ✅ luôn truyền StaffDetailId vào filter
+      }
+    }
+
     const response = await apiclient.get<AssignmentOrderListResponse>(
       '/orders/assignment',
       { params: filters }
@@ -174,6 +184,7 @@ export const getAssignmentStaffOrders = async (
     throw error;
   }
 };
+
 
 export const getAssignmentManagerOrders = async (
   filters: AssignmentOrderFilters

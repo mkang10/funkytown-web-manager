@@ -16,12 +16,28 @@
   }
 }
 
+/* globals.css */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
+
+
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-  -webkit-text-fill-color: #000 !important; /* Màu chữ mong muốn */
-  transition: background-color 5000s ease-in-out 0s;
-  background-color: transparent !important; /* Đặt background thành trong suốt */
+  -webkit-text-fill-color: inherit !important;       /* Kế thừa màu chữ theo theme */
+  transition: background-color 9999s ease-in-out 0s; /* Tránh hiệu ứng chuyển màu xanh */
+  background-color: transparent !important;          /* Nền trong suốt */
+  box-shadow: 0 0 0px 1000px transparent inset !important; /* Loại bỏ viền xanh bên trong */
 }
 
 
