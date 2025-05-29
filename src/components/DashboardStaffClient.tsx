@@ -54,6 +54,7 @@ export default function InventoryDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders]   = useState<OrderInfo[]>([]);             // <-- state orders
+  const [swiperInstance, setSwiperInstance] = useState<any>(null);
 
   // Ref cho nút navigation
   const prevRef = useRef<HTMLButtonElement>(null);
@@ -73,6 +74,24 @@ export default function InventoryDashboard() {
     })();
   }, []);
 
+useEffect(() => {
+    if (
+      swiperInstance &&
+      swiperInstance.params.navigation &&
+      typeof swiperInstance.params.navigation !== "boolean" &&
+      prevRef.current &&
+      nextRef.current
+    ) {
+      swiperInstance.params.navigation.prevEl = prevRef.current;
+      swiperInstance.params.navigation.nextEl = nextRef.current;
+
+      // Re-initialize navigation
+      swiperInstance.navigation.destroy();
+      swiperInstance.navigation.init();
+      swiperInstance.navigation.update();
+    }
+  }, [swiperInstance]);
+
   if (loading) {
     return (
       <div className="p-8 flex justify-center items-center min-h-screen text-gray-800 dark:text-white">
@@ -87,6 +106,7 @@ export default function InventoryDashboard() {
     return <div className="p-8 text-red-500 text-center">Đã có lỗi: {error}</div>;
   }
 
+    
   const summary = getStatusSummary(data);
   const chartData = [
     { name: "Thành công", value: summary.Success, color: STATUS_COLORS.Success },
