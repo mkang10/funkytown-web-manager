@@ -164,6 +164,8 @@ useEffect(() => {
               swiper.params.navigation.nextEl = nextRef.current;
             }
           }}
+                    onSwiper={setSwiperInstance}
+
           style={{ paddingBottom: "3rem" }}
         >
           <SwiperSlide>
