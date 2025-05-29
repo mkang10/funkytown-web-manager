@@ -69,7 +69,7 @@ export default function Sidebar({
         <SidebarDropdown id="orders" icon={<FiShoppingCart />} label="Đơn Hàng" isOpen={isSidebarOpen} subItems={[
           { label: "Xác Nhận Đơn", route: "/order/order-confirm" }
         ]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} setIsSidebarOpen={setIsSidebarOpen} />
-        <SidebarDropdown id="delivery" icon={<FiTruck />} label="Giao Hàng" isOpen={isSidebarOpen} subItems={[
+        {/* <SidebarDropdown id="delivery" icon={<FiTruck />} label="Giao Hàng" isOpen={isSidebarOpen} subItems={[
           { label: "Theo Dõi", route: "/staff/delivery" }
         ]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} setIsSidebarOpen={setIsSidebarOpen} />
         <SidebarDropdown id="returns" icon={<FiRotateCcw />} label="Hoàn Trả" isOpen={isSidebarOpen} subItems={[
@@ -81,7 +81,7 @@ export default function Sidebar({
         ]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} setIsSidebarOpen={setIsSidebarOpen} />
         <SidebarDropdown id="stock" icon={<FiArchive />} label="Tình Trạng Hàng" isOpen={isSidebarOpen} subItems={[
           { label: "Tồn Hàng", route: "/staff/stock-status" }
-        ]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} setIsSidebarOpen={setIsSidebarOpen} />
+        ]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} setIsSidebarOpen={setIsSidebarOpen} /> */}
       </nav>
 
     
