@@ -134,7 +134,7 @@ export const DashboardShell: React.FC<DashboardLayoutProps> = ({ children }) => 
 
           <main className="flex-1 overflow-y-auto p-4">
             <div
-              className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 min-h-full border border-gray-200 dark:border-zinc-700 transition-all duration-300"
+              className="bg-white/80 dark:bg-black backdrop-blur-2xl rounded-3xl shadow-2xl p-6 min-h-full border border-gray-200 dark:border-zinc-700 transition-all duration-300"
               style={{
                 boxShadow: isDark
                   ? "0 0 12px rgba(255, 255, 255, 0.3), 0 0 24px rgba(255, 255, 255, 0.2)" // Trắng glow

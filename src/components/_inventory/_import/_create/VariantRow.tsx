@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, TextField, IconButton, Typography } from "@mui/material";
+import { Box, TextField, IconButton, Typography, useTheme } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 interface VariantRowProps {
@@ -26,6 +26,8 @@ const VariantRow: React.FC<VariantRowProps> = ({
   onQuantityChange,
   onRemoveRow,
 }) => {
+  const theme = useTheme();
+
   const [localcostPrice, setLocalcostPrice] = useState<string>(
     costPrice !== 0 ? (costPrice / 1000).toString() : ""
   );
@@ -49,16 +51,21 @@ const VariantRow: React.FC<VariantRowProps> = ({
   const freezecostPrice = localcostPrice !== "" && localcostPrice[0] === "0";
   const freezeQuantity = localQuantity !== "" && localQuantity[0] === "0";
 
+  // Màu sắc tùy theo theme mode
+  const bgColor = theme.palette.mode === "dark" ? "#222" : "#fff";
+  const borderColor = theme.palette.mode === "dark" ? "#555" : "#ddd";
+  const textColor = theme.palette.mode === "dark" ? "#eee" : "#000";
+
   return (
     <Box
       sx={{
-        border: "1px solid #ddd",
+        border: `1px solid ${borderColor}`,
         p: 2,
         borderRadius: 1,
         position: "relative",
         mb: 2,
-        backgroundColor: "#fff",
-        color: "#000",
+        backgroundColor: bgColor,
+        color: textColor,
       }}
     >
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -74,9 +81,25 @@ const VariantRow: React.FC<VariantRowProps> = ({
               overflow: "hidden",
               textOverflow: "ellipsis",
               cursor: "pointer",
+              color: textColor,
+              "& .MuiInputBase-input.Mui-disabled": {
+                WebkitTextFillColor: textColor, // để text trong readOnly màu đúng
+              },
             },
           }}
           placeholder="Chọn Biến thể Sản phẩm"
+          variant="outlined"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: theme.palette.mode === "dark" ? "#333" : "#fafafa",
+              "& fieldset": {
+                borderColor: borderColor,
+              },
+              "&:hover fieldset": {
+                borderColor: theme.palette.primary.main,
+              },
+            },
+          }}
         />
         {index > 0 && (
           <IconButton onClick={() => onRemoveRow(index)} sx={{ ml: 1 }} size="small">
@@ -85,7 +108,6 @@ const VariantRow: React.FC<VariantRowProps> = ({
         )}
       </Box>
       <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-       
         <TextField
           label="Số lượng"
           type="number"
@@ -107,6 +129,24 @@ const VariantRow: React.FC<VariantRowProps> = ({
               ? "Số lượng phải là số dương"
               : ""
           }
+          variant="outlined"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: theme.palette.mode === "dark" ? "#333" : "#fafafa",
+              "& fieldset": {
+                borderColor: quantityNegativeError || freezeQuantity ? theme.palette.error.main : borderColor,
+              },
+              "&:hover fieldset": {
+                borderColor: theme.palette.primary.main,
+              },
+            },
+            input: {
+              color: textColor,
+            },
+            label: {
+              color: textColor,
+            },
+          }}
         />
       </Box>
       <Box sx={{ mt: 1 }}>

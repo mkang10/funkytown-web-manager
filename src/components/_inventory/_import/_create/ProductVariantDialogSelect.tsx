@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -14,12 +16,13 @@ import {
   CircularProgress,
   Typography,
   TextField,
+  Tooltip,
+  useTheme,
 } from "@mui/material";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { productVariant } from "@/type/Product";
 import { getProductVariants } from "@/ultis/importapi";
-import { Tooltip } from "@mui/material";
 
 interface ProductVariantDialogSelectProps {
   open: boolean;
@@ -34,6 +37,9 @@ const ProductVariantDialogSelect: React.FC<ProductVariantDialogSelectProps> = ({
   onSelect,
   selectedVariantIds = [],
 }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const [variants, setVariants] = useState<productVariant[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -92,10 +98,12 @@ const ProductVariantDialogSelect: React.FC<ProductVariantDialogSelectProps> = ({
           sx: {
             p: 3,
             height: 520,
-            backgroundColor: "#fff",
-            border: "1px solid #e0e0e0",
+            backgroundColor: isDark ? theme.palette.background.paper : "#fff",
+            border: isDark ? `1px solid ${theme.palette.divider}` : "1px solid #e0e0e0",
             borderRadius: "12px",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+            boxShadow: isDark
+              ? "0 4px 16px rgba(255 255 255 / 0.08)"
+              : "0 4px 16px rgba(0,0,0,0.08)",
           },
         }}
       >
@@ -104,8 +112,10 @@ const ProductVariantDialogSelect: React.FC<ProductVariantDialogSelectProps> = ({
             variant="h6"
             sx={{
               fontWeight: 600,
-              color: "#222",
-              borderBottom: "1px solid #e0e0e0",
+              color: isDark ? theme.palette.text.primary : "#222",
+              borderBottom: isDark
+                ? `1px solid ${theme.palette.divider}`
+                : "1px solid #e0e0e0",
               pb: 1,
             }}
           >
@@ -122,22 +132,37 @@ const ProductVariantDialogSelect: React.FC<ProductVariantDialogSelectProps> = ({
               value={search}
               onChange={handleSearchChange}
               sx={{
-                backgroundColor: "#fafafa",
+                backgroundColor: isDark ? theme.palette.background.default : "#fafafa",
                 borderRadius: 1,
+                input: {
+                  color: isDark ? theme.palette.text.primary : "inherit",
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: isDark ? theme.palette.divider : undefined,
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: isDark ? theme.palette.text.primary : undefined,
+                },
               }}
             />
           </Box>
 
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-              <CircularProgress size={28} />
+              <CircularProgress size={28} color={isDark ? "inherit" : "primary"} />
             </Box>
           ) : error ? (
             <Typography sx={{ color: "error.main", textAlign: "center", py: 2 }}>
               {error}
             </Typography>
           ) : variants.length === 0 ? (
-            <Typography sx={{ color: "text.secondary", textAlign: "center", py: 2 }}>
+            <Typography
+              sx={{
+                color: isDark ? theme.palette.text.secondary : "text.secondary",
+                textAlign: "center",
+                py: 2,
+              }}
+            >
               Không có kết quả
             </Typography>
           ) : (
@@ -148,44 +173,57 @@ const ProductVariantDialogSelect: React.FC<ProductVariantDialogSelectProps> = ({
                   return (
                     <ListItem key={variant.variantId} disableGutters sx={{ mb: 1 }}>
                       <Tooltip title={disabled ? "Sản phẩm đã được chọn ở dòng khác" : ""} arrow>
-                      <span style={{ width: "100%" }}>
-                      <ListItemButton
-                        onClick={() => handleSelect(variant)}
-                        disabled={disabled}
-                        sx={{
-                          border: "1px solid #e0e0e0",
-                          borderRadius: 2,
-                          px: 2,
-                          py: 1,
-                          backgroundColor: "#fafafa",
-                          transition: "all 0.2s ease",
-                          "&:hover": {
-                            backgroundColor: "#000",
-                            "& .MuiListItemText-primary, & .MuiListItemText-secondary": {
-                              color: "#fff",
-                            },
-                          },
-                          ...(disabled && {
-                            opacity: 0.5,
-                            cursor: "not-allowed",
-                          }),
-                        }}
-                      >
-                        <ListItemAvatar>
-                          <Avatar
-                            src={variant.mainImagePath}
-                            alt={variant.productName}
-                            sx={{ border: "1px solid #e0e0e0" }}
-                          />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={variant.productName}
-                          secondary={`${variant.sizeName} – ${variant.colorName}`}
-                          primaryTypographyProps={{ fontWeight: 600, color: "#222" }}
-                          secondaryTypographyProps={{ color: "#555" }}
-                        />
-                      </ListItemButton>
-                      </span>
+                        <span style={{ width: "100%" }}>
+                          <ListItemButton
+                            onClick={() => handleSelect(variant)}
+                            disabled={disabled}
+                            sx={{
+                              border: isDark
+                                ? `1px solid ${theme.palette.divider}`
+                                : "1px solid #e0e0e0",
+                              borderRadius: 2,
+                              px: 2,
+                              py: 1,
+                              backgroundColor: isDark
+                                ? theme.palette.background.default
+                                : "#fafafa",
+                              transition: "all 0.2s ease",
+                              "&:hover": {
+                                backgroundColor: isDark ? theme.palette.primary.main : "#000",
+                                "& .MuiListItemText-primary, & .MuiListItemText-secondary": {
+                                  color: "#fff",
+                                },
+                              },
+                              ...(disabled && {
+                                opacity: 0.5,
+                                cursor: "not-allowed",
+                              }),
+                            }}
+                          >
+                            <ListItemAvatar>
+                              <Avatar
+                                src={variant.mainImagePath}
+                                alt={variant.productName}
+                                sx={{
+                                  border: isDark
+                                    ? `1px solid ${theme.palette.divider}`
+                                    : "1px solid #e0e0e0",
+                                }}
+                              />
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={variant.productName}
+                              secondary={`${variant.sizeName} – ${variant.colorName}`}
+                              primaryTypographyProps={{
+                                fontWeight: 600,
+                                color: isDark ? theme.palette.text.primary : "#222",
+                              }}
+                              secondaryTypographyProps={{
+                                color: isDark ? theme.palette.text.secondary : "#555",
+                              }}
+                            />
+                          </ListItemButton>
+                        </span>
                       </Tooltip>
                     </ListItem>
                   );
@@ -201,12 +239,20 @@ const ProductVariantDialogSelect: React.FC<ProductVariantDialogSelectProps> = ({
                     size="small"
                     sx={{
                       "& .MuiPaginationItem-root": {
-                        color: "#222",
-                        border: "1px solid #e0e0e0",
+                        color: isDark ? theme.palette.text.primary : "#222",
+                        border: isDark
+                          ? `1px solid ${theme.palette.divider}`
+                          : "1px solid #e0e0e0",
                         borderRadius: 1,
                         transition: "all 0.2s ease",
-                        "&:hover": { backgroundColor: "#333", color: "#fff" },
-                        "&.Mui-selected": { backgroundColor: "#000", color: "#fff" },
+                        "&:hover": {
+                          backgroundColor: isDark ? theme.palette.primary.main : "#333",
+                          color: "#fff",
+                        },
+                        "&.Mui-selected": {
+                          backgroundColor: isDark ? theme.palette.primary.main : "#000",
+                          color: "#fff",
+                        },
                       },
                     }}
                   />
@@ -216,6 +262,7 @@ const ProductVariantDialogSelect: React.FC<ProductVariantDialogSelectProps> = ({
           )}
         </DialogContent>
       </Dialog>
+
       <ToastContainer
         position="top-center"
         autoClose={3000}

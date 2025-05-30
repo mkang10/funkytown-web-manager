@@ -19,6 +19,8 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  useTheme,
+  alpha,
 } from "@mui/material";
 import { getDispatchById } from "@/ultis/dispatch";
 import { DispatchDetail, DispatchResponseDto } from "@/type/dispatchdetail";
@@ -38,6 +40,7 @@ function TabPanel({ children, value, index }: TabPanelProps) {
 }
 
 const DispatchDetailPage: React.FC = () => {
+  const theme = useTheme();
   const params = useParams();
   const id = Number(params?.id);
   const [data, setData] = useState<DispatchResponseDto | null>(null);
@@ -90,22 +93,28 @@ const DispatchDetailPage: React.FC = () => {
     completedDate,
     details,
   } = jsonDispatchGet;
-  ;
 
   return (
-    <Box sx={{ p: 4, backgroundColor: "#fafafa", minHeight: "100vh", color: "#212121" }}>
+    <Box
+      sx={{
+        p: 4,
+        backgroundColor: theme.palette.background.default,
+        minHeight: "100vh",
+        color: theme.palette.text.primary,
+      }}
+    >
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         Chi Tiết Phiếu Xuất #{dispatchId}
       </Typography>
-      <Divider sx={{ mb: 3, borderColor: "#e0e0e0" }} />
+      <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
 
       <Paper
         sx={{
           borderRadius: 2,
           boxShadow: "none",
-          border: "1px solid #e0e0e0",
+          border: `1px solid ${theme.palette.divider}`,
           mb: 3,
-          backgroundColor: "#fff",
+          backgroundColor: theme.palette.background.paper,
         }}
       >
         <Tabs
@@ -127,9 +136,9 @@ const DispatchDetailPage: React.FC = () => {
             mb: 3,
             p: 3,
             borderRadius: 2,
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.background.paper,
             boxShadow: "none",
-            border: "1px solid #e0e0e0",
+            border: `1px solid ${theme.palette.divider}`,
           }}
         >
           <Grid container spacing={2}>
@@ -157,39 +166,39 @@ const DispatchDetailPage: React.FC = () => {
                       textTransform: "capitalize",
                       ...(status === "Done"
                         ? {
-                          color: "#388e3c",
-                          borderColor: "#388e3c",
-                          backgroundColor: "#e8f5e9",
-                        }
+                            color: "#388e3c",
+                            borderColor: "#388e3c",
+                            backgroundColor: "#e8f5e9",
+                          }
                         : status === "Pending"
-                          ? {
+                        ? {
                             color: "#f57c00",
                             borderColor: "#f57c00",
                             backgroundColor: "#fff3e0",
                           }
-                          : status === "Processing"
-                            ? {
-                              color: "#1976d2",
-                              borderColor: "#1976d2",
-                              backgroundColor: "#e3f2fd",
-                            }
-                            : status === "Handled"
-                              ? {
-                                color: "#6a1b9a",
-                                borderColor: "#6a1b9a",
-                                backgroundColor: "#f3e5f5",
-                              }
-                              : status === "Failed" || status === "Error"
-                                ? {
-                                  color: "#d32f2f",
-                                  borderColor: "#d32f2f",
-                                  backgroundColor: "#fdecea",
-                                }
-                                : {
-                                  color: "#757575",
-                                  borderColor: "#bdbdbd",
-                                  backgroundColor: "#f5f5f5",
-                                }),
+                        : status === "Processing"
+                        ? {
+                            color: "#1976d2",
+                            borderColor: "#1976d2",
+                            backgroundColor: "#e3f2fd",
+                          }
+                        : status === "Handled"
+                        ? {
+                            color: "#6a1b9a",
+                            borderColor: "#6a1b9a",
+                            backgroundColor: "#f3e5f5",
+                          }
+                        : status === "Failed" || status === "Error"
+                        ? {
+                            color: "#d32f2f",
+                            borderColor: "#d32f2f",
+                            backgroundColor: "#fdecea",
+                          }
+                        : {
+                            color: "#757575",
+                            borderColor: "#bdbdbd",
+                            backgroundColor: "#f5f5f5",
+                          }),
                     }}
                   />
                 ) : (
@@ -205,8 +214,17 @@ const DispatchDetailPage: React.FC = () => {
         <Typography variant="h6" gutterBottom>
           Danh sách chi tiết
         </Typography>
-        <Table sx={{ backgroundColor: "#fff", border: "1px solid #e0e0e0" }}>
-          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+        <Table
+          sx={{
+            backgroundColor: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
+          }}
+        >
+          <TableHead
+            sx={{
+              backgroundColor: alpha(theme.palette.text.primary, 0.05),
+            }}
+          >
             <TableRow>
               {[
                 "Mã chi tiết",
@@ -219,7 +237,7 @@ const DispatchDetailPage: React.FC = () => {
               ].map((header) => (
                 <TableCell
                   key={header}
-                  sx={{ fontWeight: 600, color: "#212121" }}
+                  sx={{ fontWeight: 600, color: theme.palette.text.primary }}
                   align={["Số lượng", "Đơn giá", "Đã phân bổ"].includes(header) ? "right" : "left"}
                 >
                   {header}
@@ -234,7 +252,9 @@ const DispatchDetailPage: React.FC = () => {
                 key={d.dispatchDetailId}
                 hover
                 sx={{
-                  "&:hover": { backgroundColor: "#f0f0f0" },
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                  },
                 }}
               >
                 <TableCell>{d.dispatchDetailId}</TableCell>
@@ -254,39 +274,39 @@ const DispatchDetailPage: React.FC = () => {
                       textTransform: "capitalize",
                       ...(status === "Done"
                         ? {
-                          color: "#388e3c",
-                          borderColor: "#388e3c",
-                          backgroundColor: "#e8f5e9",
-                        }
+                            color: "#388e3c",
+                            borderColor: "#388e3c",
+                            backgroundColor: "#e8f5e9",
+                          }
                         : status === "Pending"
-                          ? {
+                        ? {
                             color: "#f57c00",
                             borderColor: "#f57c00",
                             backgroundColor: "#fff3e0",
                           }
-                          : status === "Processing"
-                            ? {
-                              color: "#1976d2",
-                              borderColor: "#1976d2",
-                              backgroundColor: "#e3f2fd",
-                            }
-                            : status === "Handled"
-                              ? {
-                                color: "#6a1b9a",
-                                borderColor: "#6a1b9a",
-                                backgroundColor: "#f3e5f5",
-                              }
-                              : status === "Failed" || status === "Error"
-                                ? {
-                                  color: "#d32f2f",
-                                  borderColor: "#d32f2f",
-                                  backgroundColor: "#fdecea",
-                                }
-                                : {
-                                  color: "#757575",
-                                  borderColor: "#bdbdbd",
-                                  backgroundColor: "#f5f5f5",
-                                }),
+                        : status === "Processing"
+                        ? {
+                            color: "#1976d2",
+                            borderColor: "#1976d2",
+                            backgroundColor: "#e3f2fd",
+                          }
+                        : status === "Handled"
+                        ? {
+                            color: "#6a1b9a",
+                            borderColor: "#6a1b9a",
+                            backgroundColor: "#f3e5f5",
+                          }
+                        : status === "Failed" || status === "Error"
+                        ? {
+                            color: "#d32f2f",
+                            borderColor: "#d32f2f",
+                            backgroundColor: "#fdecea",
+                          }
+                        : {
+                            color: "#757575",
+                            borderColor: "#bdbdbd",
+                            backgroundColor: "#f5f5f5",
+                          }),
                     }}
                   />
                 </TableCell>
@@ -310,8 +330,8 @@ const DispatchDetailPage: React.FC = () => {
                 mb: 2,
                 p: 2,
                 borderRadius: 2,
-                backgroundColor: "#fff",
-                border: "1px solid #e0e0e0",
+                backgroundColor: theme.palette.background.paper,
+                border: `1px solid ${theme.palette.divider}`,
                 boxShadow: "none",
               }}
             >
@@ -329,7 +349,6 @@ const DispatchDetailPage: React.FC = () => {
       </TabPanel>
     </Box>
   );
-
 };
 
 export default DispatchDetailPage;

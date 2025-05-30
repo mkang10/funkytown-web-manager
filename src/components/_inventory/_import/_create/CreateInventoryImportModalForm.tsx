@@ -8,6 +8,7 @@ import {
   Button,
   Snackbar,
   Alert,
+  useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProductVariantDialogSelect from "./ProductVariantDialogSelect";
@@ -32,6 +33,9 @@ const CreateInventoryImportModalForm: React.FC<CreateInventoryImportModalFormPro
   loading,
   onQuantityChange,
 }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRow, setSelectedRow] = useState(0);
   const [productDisplayArray, setProductDisplayArray] = useState<string[]>(
@@ -167,15 +171,24 @@ const CreateInventoryImportModalForm: React.FC<CreateInventoryImportModalFormPro
   const handleCloseNotification = () => setNotification("");
 
   return (
-    <Paper sx={{
-      p: 4,
-      mb: 4,
-      backgroundColor: "#f9f9f9",
-      border: "1px solid #e0e0e0",
-      borderRadius: 4
-    }}>
-      <Box component="form" onSubmit={onSubmit} sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, color: "#111" }}>
+    <Paper
+      sx={{
+        p: 4,
+        mb: 4,
+        backgroundColor: isDark ? theme.palette.background.paper : "#f9f9f9",
+        border: `1px solid ${isDark ? theme.palette.divider : "#e0e0e0"}`,
+        borderRadius: 4,
+      }}
+    >
+      <Box
+        component="form"
+        onSubmit={onSubmit}
+        sx={{ display: "flex", flexDirection: "column", gap: 4 }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 600, color: isDark ? "#eee" : "#111" }}
+        >
           Thông tin nhập kho
         </Typography>
 
@@ -200,11 +213,11 @@ const CreateInventoryImportModalForm: React.FC<CreateInventoryImportModalFormPro
             startIcon={<AddIcon />}
             onClick={handleAddRow}
             sx={{
-              color: "#000",
-              borderColor: "#000",
+              color: isDark ? "#fff" : "#000",
+              borderColor: isDark ? "#fff" : "#000",
               "&:hover": {
-                backgroundColor: "#000",
-                color: "#fff",
+                backgroundColor: isDark ? "#fff" : "#000",
+                color: isDark ? "#000" : "#fff",
               },
             }}
           >
@@ -212,7 +225,7 @@ const CreateInventoryImportModalForm: React.FC<CreateInventoryImportModalFormPro
           </Button>
         </Box>
 
-        <Divider sx={{ mt: 3, borderColor: "#ccc" }} />
+        <Divider sx={{ mt: 3, borderColor: isDark ? theme.palette.divider : "#ccc" }} />
       </Box>
 
       <ProductVariantDialogSelect
@@ -221,8 +234,21 @@ const CreateInventoryImportModalForm: React.FC<CreateInventoryImportModalFormPro
         onSelect={handleVariantSelect}
       />
 
-      <Snackbar open={notification !== ""} autoHideDuration={3000} onClose={handleCloseNotification}>
-        <Alert onClose={handleCloseNotification} severity="info" sx={{ width: "100%" }}>
+      <Snackbar
+        open={notification !== ""}
+        autoHideDuration={3000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseNotification}
+          severity="info"
+          sx={{
+            width: "100%",
+            backgroundColor: isDark ? "#333" : undefined,
+            color: isDark ? "#eee" : undefined,
+          }}
+        >
           {notification}
         </Alert>
       </Snackbar>

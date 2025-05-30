@@ -13,6 +13,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { InventoryImportItem } from "@/type/InventoryImport";
 import { useRouter } from "next/navigation";
 import { getStatusColor } from "@/ultis/UI";
@@ -31,6 +32,8 @@ const InventoryImportTable: React.FC<InventoryImportTableProps> = ({
   onSortChange,
 }) => {
   const router = useRouter();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   const handleRowClick = (importId: number) => {
     router.push(`/inventory/import/${importId}`);
@@ -43,67 +46,39 @@ const InventoryImportTable: React.FC<InventoryImportTableProps> = ({
   };
 
   return (
-    <Box sx={{ padding: 3, backgroundColor: '#fff' }}>
+    <Box sx={{ padding: 3, backgroundColor: isDark ? theme.palette.background.default : "#fff" }}>
       <Paper
         elevation={0}
         sx={{
-          borderRadius: '16px',
-          backgroundColor: '#fff',
-          border: '1px solid #e0e0e0',
+          borderRadius: "16px",
+          backgroundColor: isDark ? theme.palette.background.paper : "#fff",
+          border: `1px solid ${isDark ? theme.palette.divider : "#e0e0e0"}`,
         }}
       >
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                <TableCell align="center" sx={{ fontWeight: 700 }}>
-                  <TableSortLabel
-                    active={sortBy === 'ImportId'}
-                    direction={sortBy === 'ImportId' && isDescending ? 'desc' : 'asc'}
-                    onClick={createSortHandler('ImportId')}
-                  >
-                    Mã nhập
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700 }}>
-                  <TableSortLabel
-                    active={sortBy === 'ReferenceNumber'}
-                    direction={sortBy === 'ReferenceNumber' && isDescending ? 'desc' : 'asc'}
-                    onClick={createSortHandler('ReferenceNumber')}
-                  >
-                    Mã tham chiếu
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700 }}>
-                  <TableSortLabel
-                    active={sortBy === 'CreatedByName'}
-                    direction={sortBy === 'CreatedByName' && isDescending ? 'desc' : 'asc'}
-                    onClick={createSortHandler('CreatedByName')}
-                  >
-                    Người tạo
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700 }}>
-                  <TableSortLabel
-                    active={sortBy === 'CreatedDate'}
-                    direction={sortBy === 'CreatedDate' && isDescending ? 'desc' : 'asc'}
-                    onClick={createSortHandler('CreatedDate')}
-                  >
-                    Ngày tạo
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700 }}>
+              <TableRow sx={{ backgroundColor: isDark ? theme.palette.action.hover : "#f5f5f5" }}>
+                {[
+                  { label: "Mã nhập", field: "ImportId" },
+                  { label: "Mã tham chiếu", field: "ReferenceNumber" },
+                  { label: "Người tạo", field: "CreatedByName" },
+                  { label: "Ngày tạo", field: "CreatedDate" },
+                ].map(({ label, field }) => (
+                  <TableCell key={field} align="center" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
+                    <TableSortLabel
+                      active={sortBy === field}
+                      direction={sortBy === field && isDescending ? "desc" : "asc"}
+                      onClick={createSortHandler(field)}
+                      sx={{ color: theme.palette.text.primary }}
+                    >
+                      {label}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+                <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
                   Trạng thái
                 </TableCell>
-                {/* <TableCell align="center" sx={{ fontWeight: 700 }}>
-                  <TableSortLabel
-                    active={sortBy === 'TotalCost'}
-                    direction={sortBy === 'TotalCost' && isDescending ? 'desc' : 'asc'}
-                    onClick={createSortHandler('TotalCost')}
-                  >
-                    Tổng chi phí
-                  </TableSortLabel>
-                </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -112,57 +87,52 @@ const InventoryImportTable: React.FC<InventoryImportTableProps> = ({
                   key={item.importId}
                   hover
                   sx={{
-                    cursor: 'pointer',
-                    '&:hover': { backgroundColor: '#fafafa' },
-                    transition: 'background-color 0.2s ease',
+                    cursor: "pointer",
+                    transition: "background-color 0.2s ease",
+                    "&:hover": {
+                      backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "#fafafa",
+                    },
                   }}
                   onClick={() => handleRowClick(item.importId)}
                 >
                   <TableCell align="center">
-                    <Typography variant="body2" color="textPrimary">
+                    <Typography variant="body2" color="text.primary">
                       {item.importId}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography variant="body2" color="textPrimary">
+                    <Typography variant="body2" color="text.primary">
                       {item.referenceNumber}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography variant="body2" color="textPrimary">
+                    <Typography variant="body2" color="text.primary">
                       {item.createdByName}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography variant="body2" color="textPrimary">
-                      {new Date(item.createdDate).toLocaleString('vi-VN')}
+                    <Typography variant="body2" color="text.primary">
+                      {new Date(item.createdDate).toLocaleString("vi-VN")}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Tooltip title={
-                      item.status === 'Partial Success' ? 'Phiếu nhập thiếu sản phẩm' : ''
-                    }>
+                    <Tooltip title={item.status === "Partial Success" ? "Phiếu nhập thiếu sản phẩm" : ""}>
                       <Box
                         sx={{
                           backgroundColor: getStatusColor(item.status),
-                          color: '#fff',
+                          color: "#fff",
                           fontWeight: 600,
-                          borderRadius: '8px',
+                          borderRadius: "8px",
                           px: 2,
                           py: 0.5,
-                          display: 'inline-block',
-                          fontSize: '0.875rem',
+                          display: "inline-block",
+                          fontSize: "0.875rem",
                         }}
                       >
                         {item.status}
                       </Box>
                     </Tooltip>
                   </TableCell>
-                  {/* <TableCell align="center">
-                    <Typography variant="body2" color="textPrimary">
-                      {item.totalCost.toLocaleString('vi-VN')} VND
-                    </Typography>
-                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

@@ -12,6 +12,7 @@ import {
   Box,
   IconButton,
   Typography,
+  useTheme,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -53,6 +54,9 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   initialFilters = {},
   showStatusFilter = true,
 }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   const defaultHandleBy = useMemo(() => {
     try {
       const acc = localStorage.getItem('account');
@@ -130,8 +134,14 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ m: 0, p: 2, backgroundColor: '#000', color: '#fff' }}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" PaperProps={{
+      sx: {
+        bgcolor: isDark ? theme.palette.background.paper : '#fff',
+        color: isDark ? theme.palette.text.primary : '#000',
+        borderRadius: 2,
+      }
+    }}>
+      <DialogTitle sx={{ m: 0, p: 2, bgcolor: isDark ? '#121212' : '#000', color: '#fff', position: 'relative' }}>
         Bộ lọc phiếu nhập
         <IconButton
           aria-label="close"
@@ -141,11 +151,11 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers sx={{ backgroundColor: '#f9f9f9', pt: 3 }}>
+      <DialogContent dividers sx={{ bgcolor: isDark ? theme.palette.background.default : '#f9f9f9', pt: 3 }}>
         <Grid container spacing={2}>
           {showStatusFilter && (
             <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle2" sx={{ mb:1, color:'#333' }}>Trạng thái</Typography>
+              <Typography variant="subtitle2" sx={{ mb:1, color: isDark ? '#bbb' : '#333' }}>Trạng thái</Typography>
               <TextField
                 select
                 fullWidth
@@ -153,6 +163,18 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                 onChange={e => setStatus(e.target.value)}
                 variant="outlined"
                 size="small"
+                sx={{
+                  bgcolor: isDark ? theme.palette.background.paper : '#fff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: isDark ? '#555' : '#ccc',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: isDark ? '#888' : '#999',
+                  },
+                  '& .MuiInputBase-input': {
+                    color: isDark ? '#eee' : '#000',
+                  }
+                }}
               >
                 {['','Pending','Approved','Rejected','Processing','Done'].map(s => (
                   <MenuItem key={s} value={s}>{s || 'Tất cả'}</MenuItem>
@@ -161,7 +183,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             </Grid>
           )}
           <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" sx={{ mb:1, color:'#333' }}>Khoảng thời gian</Typography>
+            <Typography variant="subtitle2" sx={{ mb:1, color: isDark ? '#bbb' : '#333' }}>Khoảng thời gian</Typography>
             <TextField
               select
               fullWidth
@@ -169,6 +191,18 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               onChange={e => handleRange(e.target.value)}
               variant="outlined"
               size="small"
+              sx={{
+                bgcolor: isDark ? theme.palette.background.paper : '#fff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#555' : '#ccc',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#888' : '#999',
+                },
+                '& .MuiInputBase-input': {
+                  color: isDark ? '#eee' : '#000',
+                }
+              }}
             >
               {timeRangeOptions.map(opt => (
                 <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
@@ -176,7 +210,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" sx={{ mb:1, color:'#333' }}>Từ ngày</Typography>
+            <Typography variant="subtitle2" sx={{ mb:1, color: isDark ? '#bbb' : '#333' }}>Từ ngày</Typography>
             <TextField
               type="datetime-local"
               fullWidth
@@ -185,10 +219,22 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               InputLabelProps={{ shrink: true }}
               value={fromDate}
               onChange={e => setFromDate(e.target.value)}
+              sx={{
+                bgcolor: isDark ? theme.palette.background.paper : '#fff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#555' : '#ccc',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#888' : '#999',
+                },
+                '& .MuiInputBase-input': {
+                  color: isDark ? '#eee' : '#000',
+                }
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" sx={{ mb:1, color:'#333' }}>Đến ngày</Typography>
+            <Typography variant="subtitle2" sx={{ mb:1, color: isDark ? '#bbb' : '#333' }}>Đến ngày</Typography>
             <TextField
               type="datetime-local"
               fullWidth
@@ -197,10 +243,22 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               InputLabelProps={{ shrink: true }}
               value={toDate}
               onChange={e => setToDate(e.target.value)}
+              sx={{
+                bgcolor: isDark ? theme.palette.background.paper : '#fff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#555' : '#ccc',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#888' : '#999',
+                },
+                '& .MuiInputBase-input': {
+                  color: isDark ? '#eee' : '#000',
+                }
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" sx={{ mb:1, color:'#333' }}>Số tham chiếu</Typography>
+            <Typography variant="subtitle2" sx={{ mb:1, color: isDark ? '#bbb' : '#333' }}>Số tham chiếu</Typography>
             <TextField
               fullWidth
               variant="outlined"
@@ -208,19 +266,46 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               placeholder="Nhập mã tham chiếu"
               value={refNum}
               onChange={e => setRefNum(e.target.value)}
+              sx={{
+                bgcolor: isDark ? theme.palette.background.paper : '#fff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#555' : '#ccc',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isDark ? '#888' : '#999',
+                },
+                '& .MuiInputBase-input': {
+                  color: isDark ? '#eee' : '#000',
+                }
+              }}
             />
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions sx={{ p:2, backgroundColor:'#fff' }}>
+      <DialogActions sx={{ p:2, bgcolor: isDark ? theme.palette.background.paper : '#fff' }}>
         <Box sx={{ flex: 1, ml:2 }}>
-          <Button onClick={() => { setStatus(''); setRefNum(''); setFromDate(''); setToDate(''); setRange(''); }}
-            sx={{ textTransform:'none', color:'#000' }}>
+          <Button
+            onClick={() => { setStatus(''); setRefNum(''); setFromDate(''); setToDate(''); setRange(''); }}
+            sx={{ textTransform:'none', color: isDark ? '#bbb' : '#000' }}
+          >
             Xóa hết
           </Button>
         </Box>
-        <Button onClick={onClose} sx={{ textTransform:'none', color:'#000' }}>Hủy</Button>
-        <Button onClick={handleApply} variant="contained" sx={{ textTransform:'none', backgroundColor:'#000', color:'#fff', '&:hover':{backgroundColor:'#333'} }}>
+        <Button onClick={onClose} sx={{ textTransform:'none', color: isDark ? '#bbb' : '#000' }}>
+          Hủy
+        </Button>
+        <Button
+          onClick={handleApply}
+          variant="contained"
+          sx={{
+            textTransform:'none',
+            bgcolor: isDark ? theme.palette.primary.main : '#000',
+            color: '#fff',
+            '&:hover': {
+              bgcolor: isDark ? theme.palette.primary.dark : '#333',
+            }
+          }}
+        >
           Áp dụng
         </Button>
       </DialogActions>

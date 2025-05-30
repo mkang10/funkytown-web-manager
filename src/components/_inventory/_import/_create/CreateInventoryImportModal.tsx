@@ -1,6 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, Alert, Box, CircularProgress, Switch, FormControlLabel } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  Alert,
+  Box,
+  CircularProgress,
+  Switch,
+  FormControlLabel,
+  useTheme,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import CreateInventoryImportModalHeader from "./CreateInventoryImportModalHeader";
 import CreateInventoryImportModalForm from "./CreateInventoryImportModalForm";
@@ -16,7 +25,14 @@ interface CreateInventoryImportModalProps {
   onSuccess: () => void;
 }
 
-const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({ open, onClose, onSuccess }) => {
+const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
+  open,
+  onClose,
+  onSuccess,
+}) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const router = useRouter();
   const [formData, setFormData] = useState<InventoryImportCreateRequest>({
     createdBy: 0,
@@ -29,9 +45,7 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
         productVariantId: 0,
         costPrice: 0,
         quantity: 0,
-        storeDetails: [
-          { allocatedQuantity: 0, handleBy: 0 },
-        ],
+        storeDetails: [{ allocatedQuantity: 0, handleBy: 0 }],
       },
     ],
   });
@@ -44,17 +58,17 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
       if (storedAccount) {
         const account = JSON.parse(storedAccount);
         const storeId = account.roleDetails?.storeId ?? 0;
-  
+
         setFormData((prev) => ({
           ...prev,
           createdBy: account.accountId,
           handleBy: account.roleDetails?.shopManagerDetailId || account.accountId,
-          wareHouseId: storeId,                     // <- thêm dòng này
+          wareHouseId: storeId,
           importDetails: prev.importDetails.map((detail) => ({
             ...detail,
             storeDetails: detail.storeDetails.map((store) => ({
               ...store,
-              wareHouseId: storeId,                 // <- giữ như cũ nếu cần
+              wareHouseId: storeId,
               allocatedQuantity: detail.quantity,
               handleBy: account.roleDetails?.shopManagerDetailId || account.accountId,
             })),
@@ -67,25 +81,19 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
   const handleProductVariantChange = (variantId: number, rowIndex: number) => {
     setFormData((prev) => {
       const newDetails = [...prev.importDetails];
-  
-      // Đảm bảo phần tử tại rowIndex tồn tại
       if (!newDetails[rowIndex]) {
         newDetails[rowIndex] = {
           productVariantId: variantId,
           costPrice: 0,
           quantity: 0,
-          storeDetails: [
-            {  allocatedQuantity: 0, handleBy: prev.handleBy },
-          ],
+          storeDetails: [{ allocatedQuantity: 0, handleBy: prev.handleBy }],
         };
       } else {
         newDetails[rowIndex].productVariantId = variantId;
       }
-  
       return { ...prev, importDetails: newDetails };
     });
   };
-  
 
   const handleCostPriceChange = (rowIndex: number, value: number) => {
     setFormData((prev) => {
@@ -109,8 +117,7 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Kiểm tra giá hoặc số lượng âm
+
     const hasNegative = formData.importDetails.some(
       (detail) => detail.costPrice < 0 || detail.quantity < 0
     );
@@ -120,46 +127,42 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
       toast.error(errMsg);
       return;
     }
-  
-    setLoading(true);
-  setError("");
 
-  try {
-    const response = await createInventoryImport(formData);
-    if (response.status) {
-      toast.success(response.message);
-      onClose();
-      onSuccess();
-    } else {
-      setError(response.message);
-      toast.error(response.message);
-    }
-  } catch (err) {
-    console.error("Submit error:", err);
-    // nếu là axios error có response blob
-    const axiosErr = err as AxiosError<Blob>;
-    if (axiosErr.response) {
-      const blob = axiosErr.response.data;
-      const contentType =
-        axiosErr.response.headers["content-type"] || "";
-      if (contentType.includes("application/json")) {
-        const text = await blob.text();
-        const json = JSON.parse(text) as InventoryImportCreateResponse;
-        setError(json.message);
-        toast.error(json.message);
-        setLoading(false);
-        return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await createInventoryImport(formData);
+      if (response.status) {
+        toast.success(response.message);
+        onClose();
+        onSuccess();
+      } else {
+        setError(response.message);
+        toast.error(response.message);
       }
+    } catch (err) {
+      console.error("Submit error:", err);
+      const axiosErr = err as AxiosError<Blob>;
+      if (axiosErr.response) {
+        const blob = axiosErr.response.data;
+        const contentType = axiosErr.response.headers["content-type"] || "";
+        if (contentType.includes("application/json")) {
+          const text = await blob.text();
+          const json = JSON.parse(text) as InventoryImportCreateResponse;
+          setError(json.message);
+          toast.error(json.message);
+          setLoading(false);
+          return;
+        }
+      }
+      const errMsg = "Có lỗi xảy ra khi tạo phiếu nhập kho.";
+      setError(errMsg);
+      toast.error(errMsg);
+    } finally {
+      setLoading(false);
     }
-    // fallback chung
-    const errMsg = "Có lỗi xảy ra khi tạo phiếu nhập kho.";
-    setError(errMsg);
-    toast.error(errMsg);
-  } finally {
-    setLoading(false);
-  }
-};
-  
+  };
 
   const handleCancel = () => {
     onClose();
@@ -168,10 +171,30 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <CreateInventoryImportModalHeader />
-      <DialogContent>
-        {error && <Alert severity="error">{error}</Alert>}
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-          {/* Nút isUrgent */}
+      <DialogContent
+        sx={{
+          bgcolor: isDark ? theme.palette.background.default : undefined,
+          color: isDark ? theme.palette.text.primary : undefined,
+        }}
+      >
+        {error && (
+          <Alert
+            severity="error"
+            sx={{
+              bgcolor: isDark ? theme.palette.error.dark : undefined,
+              color: isDark ? theme.palette.error.contrastText : undefined,
+              mb: 2,
+            }}
+          >
+            {error}
+          </Alert>
+        )}
+
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ mt: 2, color: isDark ? theme.palette.text.primary : undefined }}
+        >
           <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
             <FormControlLabel
               control={
@@ -179,13 +202,14 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
                   checked={formData.isUrgent}
                   onChange={() => setFormData({ ...formData, isUrgent: !formData.isUrgent })}
                   disabled={loading}
+                  color="primary"
                 />
               }
               label="Khẩn Cấp"
+              sx={{ color: isDark ? theme.palette.text.primary : undefined }}
             />
           </Box>
 
-          {/* Form chính */}
           <CreateInventoryImportModalForm
             formData={formData}
             onProductVariantChange={handleProductVariantChange}
@@ -195,12 +219,12 @@ const CreateInventoryImportModal: React.FC<CreateInventoryImportModalProps> = ({
             loading={loading}
           />
 
-          {/* Action buttons */}
           <CreateInventoryImportModalActions loading={loading} onCancel={handleCancel} />
         </Box>
+
         {loading && (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <CircularProgress />
+            <CircularProgress color={isDark ? "inherit" : "primary"} />
           </Box>
         )}
       </DialogContent>

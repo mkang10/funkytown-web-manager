@@ -1,7 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Box, Paper, Typography, CircularProgress, Alert, Button } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  CircularProgress,
+  Alert,
+  Button,
+  useTheme,
+} from "@mui/material";
 import { getImportDetail } from "@/ultis/importapi";
 import { ImportDetailResponse, InventoryImportItem } from "@/type/importdetail";
 import ImportDetailBasic from "@/components/_inventory/_import/_detail/ImportDetailBasic";
@@ -11,6 +19,7 @@ const ImportDetailClient: React.FC = () => {
   const params = useParams();
   const router = useRouter();
   const importId = Number(params.id);
+  const theme = useTheme();
 
   const [importDetail, setImportDetail] = useState<InventoryImportItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -43,6 +52,23 @@ const ImportDetailClient: React.FC = () => {
     router.back();
   };
 
+  // Đặt màu theo theme mode
+  const bgColor = theme.palette.mode === "dark" ? "#121212" : "#f5f5f5";
+  const containerBg = theme.palette.mode === "dark" ? "#1e1e1e" : "#fff";
+  const textColor = theme.palette.mode === "dark" ? "#eee" : "#333";
+  const paperBg = theme.palette.mode === "dark" ? "#2c2c2c" : "#fff";
+  const boxShadow =
+    theme.palette.mode === "dark"
+      ? "0 4px 20px rgba(255 255 255 / 0.05)"
+      : "0 4px 20px rgba(0, 0, 0, 0.1)";
+  const alertBg = theme.palette.mode === "dark" ? "#5a1e1e" : "#ffebe6";
+  const alertTextColor = theme.palette.mode === "dark" ? "#ffbaba" : "#d32f2f";
+  const buttonBorderColor = theme.palette.mode === "dark" ? "#bbb" : "#333";
+  const buttonColor = theme.palette.mode === "dark" ? "#eee" : "#333";
+  const buttonHoverBg = theme.palette.mode === "dark" ? "#333" : "#f0f0f0";
+  const buttonHoverBorder = theme.palette.mode === "dark" ? "#888" : "#555";
+  const circularColor = theme.palette.mode === "dark" ? "#eee" : "#333";
+
   return (
     <Box
       sx={{
@@ -51,7 +77,7 @@ const ImportDetailClient: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-        backgroundColor: "#f5f5f5", // Nền sáng nhẹ, dễ nhìn
+        backgroundColor: bgColor,
         padding: 0,
         fontFamily: "'Roboto', sans-serif",
       }}
@@ -62,9 +88,10 @@ const ImportDetailClient: React.FC = () => {
           maxWidth: "1200px",
           padding: 4,
           textAlign: "center",
-          backgroundColor: "#fff",
-          borderRadius: "8px", // Bo tròn phần viền ngoài
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)", // Thêm bóng đổ nhẹ
+          backgroundColor: containerBg,
+          borderRadius: "8px",
+          boxShadow: boxShadow,
+          color: textColor,
         }}
       >
         <Button
@@ -72,17 +99,19 @@ const ImportDetailClient: React.FC = () => {
           onClick={handleBack}
           sx={{
             mb: 2,
-            borderColor: "#333",
-            color: "#333",
+            borderColor: buttonBorderColor,
+            color: buttonColor,
             "&:hover": {
-              borderColor: "#555",
-              backgroundColor: "#f0f0f0", // Màu nền nhạt khi hover
+              borderColor: buttonHoverBorder,
+              backgroundColor: buttonHoverBg,
               transform: "scale(1.05)",
-              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Hiệu ứng shadow khi hover
+              boxShadow: theme.palette.mode === "dark"
+                ? "0 2px 10px rgba(255 255 255 / 0.1)"
+                : "0 2px 10px rgba(0, 0, 0, 0.1)",
             },
             transition: "all 0.3s ease",
             padding: "8px 20px",
-            borderRadius: "30px", // Bo tròn nút
+            borderRadius: "30px",
             fontWeight: "bold",
           }}
         >
@@ -90,7 +119,7 @@ const ImportDetailClient: React.FC = () => {
         </Button>
 
         {loading ? (
-          <CircularProgress sx={{ color: "#333", size: 50 }} />
+          <CircularProgress sx={{ color: circularColor, size: 50 }} />
         ) : error ? (
           <Alert
             severity="error"
@@ -98,8 +127,8 @@ const ImportDetailClient: React.FC = () => {
               width: "100%",
               mb: 2,
               borderRadius: "8px",
-              backgroundColor: "#ffebe6", // Màu nền cho Alert
-              color: "#d32f2f", // Màu chữ đỏ cho thông báo lỗi
+              backgroundColor: alertBg,
+              color: alertTextColor,
             }}
           >
             {error}
@@ -109,22 +138,26 @@ const ImportDetailClient: React.FC = () => {
             sx={{
               p: 4,
               width: "100%",
-              backgroundColor: "#fff",
+              backgroundColor: paperBg,
               borderRadius: 3,
-              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)", // Bóng đổ nhẹ
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? "0 8px 16px rgba(255 255 255 / 0.05)"
+                  : "0 8px 16px rgba(0, 0, 0, 0.1)",
               display: "flex",
               flexDirection: "column",
               gap: 3,
+              color: textColor,
             }}
           >
             <ImportDetailBasic data={importDetail} />
-            <ImportDetailDetails 
-              details={importDetail.details} 
-              auditLogs={importDetail.auditLogs || []} 
+            <ImportDetailDetails
+              details={importDetail.details}
+              auditLogs={importDetail.auditLogs || []}
             />
           </Paper>
         ) : (
-          <Typography variant="h6" sx={{ color: "#333", fontWeight: "bold" }}>
+          <Typography variant="h6" sx={{ color: textColor, fontWeight: "bold" }}>
             Không tìm thấy dữ liệu.
           </Typography>
         )}
